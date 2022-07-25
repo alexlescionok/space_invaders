@@ -24,8 +24,8 @@ pygame.display.set_icon(icon)
 
 # Player spaceship
 player_img = pygame.image.load("images/player_spaceship.png")
-player_x = 370 # x is width - we're starting this a little less than 400 (half of full width) because we want the image to appear centred, for that, the image's left side/corner will need to be set before 400
-player_y = 480 # y is height
+player_x = 370 # x is width // 0 is the most left point of the screen // we're starting this a little less than 400 (half of full width) because we want the image to appear centred, for that, the image's left side/corner will need to be set before 400
+player_y = 480 # y is height // 0 is the highest point of the screen
 
 def player():
     screen.blit(player_img, (player_x, player_y)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
