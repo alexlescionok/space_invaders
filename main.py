@@ -1,5 +1,5 @@
 '''
-YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 20:32
+YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 38:11
 PyGame website: https://www.pygame.org/news
 Icons: https://www.flaticon.com/
 '''
