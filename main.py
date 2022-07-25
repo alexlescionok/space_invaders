@@ -27,8 +27,8 @@ player_img = pygame.image.load("images/player_spaceship.png")
 player_x = 370 # x is width // 0 is the most left point of the screen // we're starting this a little less than 400 (half of full width) because we want the image to appear centred, for that, the image's left side/corner will need to be set before 400
 player_y = 480 # y is height // 0 is the highest point of the screen
 
-def player():
-    screen.blit(player_img, (player_x, player_y)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
+def player(x_position, y_position):
+    screen.blit(player_img, (x_position, y_position)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
 
 # An event is anything that's happening inside our game screen, e.g. closing the window, moving up/down using your arrow keys
 # We need to keep the game screen window open unless the player closes it
@@ -47,7 +47,7 @@ while running:
     
 
     #Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
-    player()
+    player(player_x, player_y)
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
 
