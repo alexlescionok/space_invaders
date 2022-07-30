@@ -5,6 +5,7 @@ Icons: https://www.flaticon.com/
 '''
 
 import pygame
+import random
 
 # Initialise the pygame
 pygame.init()
@@ -22,7 +23,7 @@ pygame.display.set_icon(icon)
 
 #### END OF GAME WINDOW SETUP
 
-# Player spaceship
+#### PLAYER
 player_img = pygame.image.load("images/player_spaceship.png")
 player_x = 370 # x is width // 0 is the most left point of the screen // we're starting this a little less than 400 (half of full width) because we want the image to appear centred, for that, the image's left side/corner will need to be set before 400
 player_y = 480 # y is height // 0 is the highest point of the screen
@@ -32,6 +33,23 @@ player_x_change = 0
 
 def player(x_position, y_position):
     screen.blit(player_img, (x_position, y_position)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
+
+#### END OF PLAYER
+
+#### ENEMY
+enemy_img = pygame.image.load("images/enemy_spaceship.png")
+# set the value to random
+enemy_x = random.randrange(0, 736) # x is width // 0 is the most left point of the screen
+enemy_y = random.randrange(50, 416) # y is height // 0 is the highest point of the screen
+
+#Define the change as 0 to start - may not need
+# enemy_x_change = 0
+# enemy_y_change = 0
+
+def enemy(x_position, y_position):
+    screen.blit(enemy_img, (x_position, y_position)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
+
+#### END OF ENEMY
 
 # An event is anything that's happening inside our game screen, e.g. closing the window, moving up/down using your arrow keys
 # We need to keep the game screen window open unless the player closes it
@@ -64,9 +82,33 @@ while running:
     
     # Define new value of player_x following the for loop checking for events (left/right keystrokes)
     player_x += player_x_change
+    
+    # Stop the player from going beyond 800px and less than 0px - so that the player cannot leave the window
+    if player_x > 736: #less than 800 to account for the spaceship size (64px)
+        player_x = 736
+    elif player_x < 0:
+        player_x = 0
+
+
+    # # trying to figure out logic for movement of enemy :L 
+    # right = True # if False, then move left
+    # left = False
+    # while right:
+    #     enemy_x += 0.5
+    # while left:
+    #     enemy_x -= 0.5
+
+    #     if enemy_x > 736:
+    #         enemy_x = 736
+    #         right = False
+    #     elif enemy_y < 0:
+    #         enemy_y = 0
+
 
     #Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
+    #Add enemy
+    enemy(enemy_x, enemy_y)
+
     
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
-
