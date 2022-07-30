@@ -10,7 +10,7 @@ import random
 # Initialise the pygame
 pygame.init()
 
-##### SET UP GAME WINDOW
+##### GAME WINDOW SETUP
 # Create a screen for our game - set the size for width, height - both in pixels
 screen = pygame.display.set_mode((800, 600))
 
@@ -60,6 +60,7 @@ while running:
     screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
 
     # pygame.event.get() grabs all of the events that are happening in the game
+    # This for loop checks for events and reacts to them
     for event in pygame.event.get():
         if event.type == pygame.QUIT: # checks if the event type is the player closing the game screen window
             running = False
@@ -90,19 +91,23 @@ while running:
         player_x = 0
 
 
-    # # trying to figure out logic for movement of enemy :L 
-    # right = True # if False, then move left
-    # left = False
-    # while right:
-    #     enemy_x += 0.5
-    # while left:
-    #     enemy_x -= 0.5
-
-    #     if enemy_x > 736:
-    #         enemy_x = 736
-    #         right = False
-    #     elif enemy_y < 0:
-    #         enemy_y = 0
+    # trying to figure out logic for movement of enemy :L 
+    right = True # if False, then move left
+    left = False
+    while right:
+        enemy_x += 0.5
+        if enemy_x > 736:
+            enemy_x = 736
+            right = False
+            left = True
+            break
+    while left:
+        enemy_x -= 0.5
+        if enemy_x > 0:
+            enemy_x = 0
+            right = True
+            left = False
+            break
 
 
     #Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
