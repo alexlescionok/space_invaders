@@ -2,6 +2,7 @@
 YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 59:45
 PyGame website: https://www.pygame.org/news
 Icons: https://www.flaticon.com/
+background: <a href='https://www.freepik.com/vectors/meteor'>Meteor vector created by vectorpouch - www.freepik.com</a>
 '''
 
 import pygame
@@ -13,6 +14,9 @@ pygame.init()
 ##### GAME WINDOW SETUP
 # Create a screen for our game - set the size for width, height - both in pixels
 screen = pygame.display.set_mode((800, 600))
+
+# Load in background
+background = pygame.image.load("images/space_background1.png")
 
 # Change title displayed in the game window
 pygame.display.set_caption("space_invaders")
@@ -58,6 +62,10 @@ running = True
 while running:
     # Set the RGB fill
     screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
+
+    # Set background image
+    screen.blit(background, (0, 0))
+
 
     # pygame.event.get() grabs all of the events that are happening in the game
     # This for loop checks for events and reacts to them
