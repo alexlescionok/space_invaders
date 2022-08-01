@@ -42,9 +42,9 @@ enemy_img = pygame.image.load("images/enemy_spaceship.png")
 enemy_x = random.randrange(0, 736) # x is width // 0 is the most left point of the screen
 enemy_y = random.randrange(50, 416) # y is height // 0 is the highest point of the screen
 
-#Define the change as 0 to start - may not need
-# enemy_x_change = 0
-# enemy_y_change = 0
+#Define the change as 0 to start
+enemy_x_change = 0.3
+enemy_y_change = 30 # maybe we add random to this to increase the tension!!
 
 def enemy(x_position, y_position):
     screen.blit(enemy_img, (x_position, y_position)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
@@ -81,6 +81,7 @@ while running:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
                 player_x_change = 0
     
+    
     # Define new value of player_x following the for loop checking for events (left/right keystrokes)
     player_x += player_x_change
     
@@ -91,24 +92,20 @@ while running:
         player_x = 0
 
 
-    # trying to figure out logic for movement of enemy :L 
-    right = True # if False, then move left
-    left = False
-    while right:
-        enemy_x += 0.5
-        if enemy_x > 736:
-            enemy_x = 736
-            right = False
-            left = True
-            break
-    while left:
-        enemy_x -= 0.5
-        if enemy_x > 0:
-            enemy_x = 0
-            right = True
-            left = False
-            break
+    #### ENEMY MOVEMENT
 
+    enemy_x += enemy_x_change
+
+    if enemy_x > 736: #less than 800 to account for the enemy size (64px)
+        enemy_x_change = -0.2
+        enemy_x += enemy_x_change
+        enemy_y += enemy_y_change
+    elif enemy_x < 0:
+        enemy_x_change = 0.2
+        enemy_x += enemy_x_change
+        enemy_y += enemy_y_change
+
+    #### END OF ENEMY MOVEMENT
 
     #Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
