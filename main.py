@@ -1,5 +1,5 @@
 '''
-YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 59:45
+YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 1:12:05
 PyGame website: https://www.pygame.org/news
 Icons: https://www.flaticon.com/
 background: <a href='https://www.freepik.com/vectors/meteor'>Meteor vector created by vectorpouch - www.freepik.com</a>
@@ -66,7 +66,6 @@ while running:
     # Set background image
     screen.blit(background, (0, 0))
 
-
     # pygame.event.get() grabs all of the events that are happening in the game
     # This for loop checks for events and reacts to them
     for event in pygame.event.get():
@@ -89,7 +88,6 @@ while running:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
                 player_x_change = 0
     
-    
     # Define new value of player_x following the for loop checking for events (left/right keystrokes)
     player_x += player_x_change
     
@@ -101,7 +99,6 @@ while running:
 
 
     #### ENEMY MOVEMENT
-
     enemy_x += enemy_x_change
 
     if enemy_x > 736: #less than 800 to account for the enemy size (64px)
@@ -120,5 +117,4 @@ while running:
     #Add enemy
     enemy(enemy_x, enemy_y)
 
-    
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
