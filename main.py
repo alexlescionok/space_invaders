@@ -1,5 +1,5 @@
 '''
-YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 1:12:05
+YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 1:23:30
 PyGame website: https://www.pygame.org/news
 Icons: https://www.flaticon.com/
 background: <a href='https://www.freepik.com/vectors/meteor'>Meteor vector created by vectorpouch - www.freepik.com</a>
