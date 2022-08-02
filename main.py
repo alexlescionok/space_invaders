@@ -3,6 +3,7 @@ YouTube video: https://www.youtube.com/watch?v=FfWpgLFMI7w&t=10s - ended on 1:12
 PyGame website: https://www.pygame.org/news
 Icons: https://www.flaticon.com/
 background: <a href='https://www.freepik.com/vectors/meteor'>Meteor vector created by vectorpouch - www.freepik.com</a>
+bullet: <a href="https://www.flaticon.com/free-icons/bullet" title="bullet icons">Bullet icons created by Good Ware - Flaticon</a>
 '''
 
 import pygame
@@ -27,6 +28,13 @@ pygame.display.set_icon(icon)
 
 #### END OF GAME WINDOW SETUP
 
+#### GLOBALS
+
+player_and_bullet_x_speed = 0.3
+enemy_x_speed = 0.2
+
+#### END OF GLOBALS
+
 #### PLAYER
 player_img = pygame.image.load("images/player_spaceship.png")
 player_x = 370 # x is width // 0 is the most left point of the screen // we're starting this a little less than 400 (half of full width) because we want the image to appear centred, for that, the image's left side/corner will need to be set before 400
@@ -40,6 +48,26 @@ def player(x_position, y_position):
 
 #### END OF PLAYER
 
+#### PLAYER BULLET
+bullet_img = pygame.image.load("images/bullet.png")
+bullet_x = 0 # x is width // 0 is the most left point of the screen - this will be controlled in a while loop
+bullet_y = 480 # y is height // 0 is the highest point of the screen - keeping it at 480 because that's where the ship is
+
+bullet_x_change = 0 # Define the change as 0 to start - this will become a different value depending on player's actions
+bullet_y_change = 10 # a moderate speed for the bullet to move
+
+# Define bullet state - when "ready", you can't see the bullet; when "fired", you can see the bullet moving
+bullet_state = "ready"
+
+def fire_bullet(x_position, y_position):
+    global bullet_state # to grab global bullet_state variable
+    bullet_state = "fire"
+    screen.blit(bullet_img, (x_position + 16, y_position + 16))
+    
+    
+
+#### END OF BULLET
+
 #### ENEMY
 enemy_img = pygame.image.load("images/enemy_spaceship.png")
 # set the value to random
@@ -51,8 +79,12 @@ enemy_x_change = 0.3
 enemy_y_change = 30 # maybe we add random to this to increase the tension!!
 
 def enemy(x_position, y_position):
-    screen.blit(enemy_img, (x_position, y_position)) # blit() is a method that draws something onto the screen - we want to draw our player spaceship on it. Arguments: blit(image, (x coordinates, y coordinates))
-
+    screen.blit(enemy_img, (x_position, y_position))
+    # while bullet_state == "fired":
+    #     bullet_y += bullet_y_change
+    #     if bullet_y == 0:
+    #         bullet_y = 480
+    #         bullet_state == "ready"
 #### END OF ENEMY
 
 # An event is anything that's happening inside our game screen, e.g. closing the window, moving up/down using your arrow keys
@@ -78,11 +110,16 @@ while running:
             # if player presses on the left key, move to the left (for as long as the left key is pressed)
             if event.key == pygame.K_LEFT:
                 # decrease the value of player_x_change (we can add a negative number to decrease the number, e.g. 5 + -0.1 = 4.9)
-                player_x_change = -0.2
+                player_x_change -= player_and_bullet_x_speed
+                bullet_x_change -= player_and_bullet_x_speed
             # if player presses on the right key, move to the left (for as long as the right key is pressed)
             elif event.key == pygame.K_RIGHT:
                 # increase the value of player_x_change
-                player_x_change = 0.2
+                player_x_change += player_and_bullet_x_speed
+                bullet_x_change += player_and_bullet_x_speed
+            elif event.key == pygame.K_SPACE:
+                fire_bullet(player_x, bullet_y)
+                
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
@@ -102,19 +139,30 @@ while running:
     enemy_x += enemy_x_change
 
     if enemy_x > 736: #less than 800 to account for the enemy size (64px)
-        enemy_x_change = -0.2
+        enemy_x_change -= enemy_x_speed
         enemy_x += enemy_x_change
         enemy_y += enemy_y_change
     elif enemy_x < 0:
-        enemy_x_change = 0.2
+        enemy_x_change += enemy_x_speed
         enemy_x += enemy_x_change
         enemy_y += enemy_y_change
 
     #### END OF ENEMY MOVEMENT
 
-    #Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
+
+    #### BULLET MOVEMENT
+    if bullet_state == "fired":
+        fire_bullet(player_x, bullet_y)
+        bullet_y -= bullet_y_change
+
+
+    # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
-    #Add enemy
+
+    # Add player bullet
+    fire_bullet(player_x, bullet_y)
+
+    # Add enemy
     enemy(enemy_x, enemy_y)
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
