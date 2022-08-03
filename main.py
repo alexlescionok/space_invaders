@@ -54,7 +54,7 @@ bullet_x = 0 # x is width // 0 is the most left point of the screen - this will 
 bullet_y = 480 # y is height // 0 is the highest point of the screen - keeping it at 480 because that's where the ship is
 
 bullet_x_change = 0 # Define the change as 0 to start - this will become a different value depending on player's actions
-bullet_y_change = 10 # a moderate speed for the bullet to move
+bullet_y_change = 1 # a moderate speed for the bullet to move
 
 # Define bullet state - when "ready", you can't see the bullet; when "fired", you can see the bullet moving
 bullet_state = "ready"
@@ -63,8 +63,6 @@ def fire_bullet(x_position, y_position):
     global bullet_state # to grab global bullet_state variable
     bullet_state = "fire"
     screen.blit(bullet_img, (x_position + 16, y_position + 16))
-    
-    
 
 #### END OF BULLET
 
@@ -80,11 +78,7 @@ enemy_y_change = 30 # maybe we add random to this to increase the tension!!
 
 def enemy(x_position, y_position):
     screen.blit(enemy_img, (x_position, y_position))
-    # while bullet_state == "fired":
-    #     bullet_y += bullet_y_change
-    #     if bullet_y == 0:
-    #         bullet_y = 480
-    #         bullet_state == "ready"
+
 #### END OF ENEMY
 
 # An event is anything that's happening inside our game screen, e.g. closing the window, moving up/down using your arrow keys
@@ -117,8 +111,13 @@ while running:
                 # increase the value of player_x_change
                 player_x_change += player_and_bullet_x_speed
                 bullet_x_change += player_and_bullet_x_speed
-            elif event.key == pygame.K_SPACE:
-                fire_bullet(player_x, bullet_y)
+            # if the player presses on the spacebar AND the bullet_state is "ready", then allow the user to fire!
+            # the bullet_state has to be "ready", because that is when the bullet_y has been reset back to 480 (check bullet movement - the state gets reverted back to "ready" after initially being "fire")
+            elif event.key == pygame.K_SPACE and bullet_state == "ready":
+                # define bullet_x to be the same as player_x - this along with bullet_x being passed as an argument in the bullet movement will ensure that the bullet uses the x_position of when it is fired, rather than follow the player spaceship
+                bullet_x = player_x
+                # trigger the fire_bullet function
+                fire_bullet(bullet_x, bullet_y)
                 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -151,16 +150,19 @@ while running:
 
 
     #### BULLET MOVEMENT
-    if bullet_state == "fired":
-        fire_bullet(player_x, bullet_y)
+    if bullet_state == "fire":
+        fire_bullet(bullet_x, bullet_y)
         bullet_y -= bullet_y_change
+        # once the bullet gets past the top of the window, let me player fire again
+        if bullet_y <= 0:
+            bullet_y = 480
+            # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
+            bullet_state = "ready"
 
+    #### END OF BULLET MOVEMENT
 
     # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
-
-    # Add player bullet
-    fire_bullet(player_x, bullet_y)
 
     # Add enemy
     enemy(enemy_x, enemy_y)
