@@ -112,7 +112,7 @@ while running:
                 player_x_change += player_and_bullet_x_speed
                 bullet_x_change += player_and_bullet_x_speed
             # if the player presses on the spacebar AND the bullet_state is "ready", then allow the user to fire!
-            # the bullet_state has to be "ready", because that is when the bullet_y has been reset back to 480 (check bullet movement - the state gets reverted back to "ready" after initially being "fire")
+            # the bullet_state has to be "ready", because that is what it is set before the bullet is every fired and when the bullet_y has been reset back to 480 (check bullet movement - the state gets reverted back to "ready" after initially being "fire")
             elif event.key == pygame.K_SPACE and bullet_state == "ready":
                 # define bullet_x to be the same as player_x - this along with bullet_x being passed as an argument in the bullet movement will ensure that the bullet uses the x_position of when it is fired, rather than follow the player spaceship
                 bullet_x = player_x
@@ -160,6 +160,17 @@ while running:
             bullet_state = "ready"
 
     #### END OF BULLET MOVEMENT
+
+
+    #### BULLET COLLISION
+    if bullet_y == enemy_y:
+        bullet_y = 480
+        # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
+        bullet_state = "ready"
+        enemy_y -= 100000 # booted out of the galaxy - of course they will eventually return though.
+
+
+    #### END OF BULLET COLLISION
 
     # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
