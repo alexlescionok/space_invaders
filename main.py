@@ -6,8 +6,10 @@ background: <a href='https://www.freepik.com/vectors/meteor'>Meteor vector creat
 bullet: <a href="https://www.flaticon.com/free-icons/bullet" title="bullet icons">Bullet icons created by Good Ware - Flaticon</a>
 '''
 
+from dis import dis
 import pygame
 import random
+import math
 
 # Initialise the pygame
 pygame.init()
@@ -32,6 +34,7 @@ pygame.display.set_icon(icon)
 
 player_and_bullet_x_speed = 0.3
 enemy_x_speed = 0.2
+score = 0
 
 #### END OF GLOBALS
 
@@ -66,11 +69,22 @@ def fire_bullet(x_position, y_position):
 
 #### END OF BULLET
 
+#### BULLET COLLISION ####
+def is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
+    # "distance" will store the distance between our bullet and our enemy
+    # formula for this: https://www.mathplanet.com/education/algebra-2/conic-sections/distance-between-two-points-and-the-midpoint
+    # we are grabbing the square root (math.sqrt) of enemy_x - bullet_x (the result of which is made to the power of 2 [math.pow(<some number(s)>, <power of something>)]) and enemy_y - bullet_y also to the power of 2
+    distance = math.sqrt((math.pow(enemy_x - bullet_x, 2)) + (math.pow(enemy_y - bullet_y, 2)))
+    # print(distance)
+    if distance < 26: # the lower the number the more it looks like the bullet has gone into the enemy
+        print(distance)
+        return True
+
 #### ENEMY
 enemy_img = pygame.image.load("images/enemy_spaceship.png")
 # set the value to random
 enemy_x = random.randrange(0, 736) # x is width // 0 is the most left point of the screen
-enemy_y = random.randrange(50, 416) # y is height // 0 is the highest point of the screen
+enemy_y = random.randrange(50, 200) # y is height // 0 is the highest point of the screen
 
 #Define the change as 0 to start
 enemy_x_change = 0.3
@@ -163,12 +177,15 @@ while running:
 
 
     #### BULLET COLLISION
-    if bullet_y == enemy_y:
+    collision = is_collision(enemy_x, enemy_y, bullet_x, bullet_y)
+    if collision: # if it is True
         bullet_y = 480
-        # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
         bullet_state = "ready"
-        enemy_y -= 100000 # booted out of the galaxy - of course they will eventually return though.
-
+        score += 1
+        print(score)
+        # respawn the enemy at a random point
+        enemy_x = random.randrange(0, 736)
+        enemy_y = random.randrange(50, 200)
 
     #### END OF BULLET COLLISION
 
