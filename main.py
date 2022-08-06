@@ -36,6 +36,7 @@ pygame.display.set_icon(icon)
 score = 0
 
 # SET UP SCOREBOARD
+# reference: https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
 # Define colours
 def scoreboard():
     green = (0, 255, 0)
