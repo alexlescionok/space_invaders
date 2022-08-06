@@ -59,7 +59,7 @@ bullet_y = 480 # y is height // 0 is the highest point of the screen - keeping i
 bullet_x_change = 0 # Define the change as 0 to start - this will become a different value depending on player's actions
 bullet_y_change = 1 # a moderate speed for the bullet to move
 
-# Define bullet state - when "ready", you can't see the bullet; when "fired", you can see the bullet moving
+# Define bullet state - when "ready", you can't see the bullet; when "fire", you can see the bullet moving
 bullet_state = "ready"
 
 def fire_bullet(x_position, y_position):
@@ -81,17 +81,30 @@ def is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
         return True
 
 #### ENEMY
-enemy_img = pygame.image.load("images/enemy_spaceship.png")
-# set the value to random
-enemy_x = random.randrange(0, 736) # x is width // 0 is the most left point of the screen
-enemy_y = random.randrange(50, 200) # y is height // 0 is the highest point of the screen
+# Define lists which we will append the enemy variables to in order to create multiple enemies
+enemy_img = []
+enemy_x = []
+enemy_y = []
+enemy_x_change = []
+enemy_y_change = []
 
-#Define the change as 0 to start
-enemy_x_change = 0.3
-enemy_y_change = 30 # maybe we add random to this to increase the tension!!
+# Set the number of enemies we want to have
+num_of_enemies = 6
 
-def enemy(x_position, y_position):
-    screen.blit(enemy_img, (x_position, y_position))
+for i in range(num_of_enemies):
+    enemy_img.append(pygame.image.load("images/enemy_spaceship.png"))
+    # set the value to random
+    enemy_x.append(random.randint(0, 736)) # x is width // 0 is the most left point of the screen
+    enemy_y.append(random.randint(50, 200)) # y is height // 0 is the highest point of the screen
+
+    #Define the change as 0 to start
+    enemy_x_change.append(0.3)
+    enemy_y_change.append(30) # maybe we add random to this to increase the tension!!
+
+# the i argument at the end will tell screen blit how many times to draw the enemy image
+def enemy(x_position, y_position, i):
+    screen.blit(enemy_img[i], (x_position, y_position))
+        
 
 #### END OF ENEMY
 
@@ -149,16 +162,33 @@ while running:
 
 
     #### ENEMY MOVEMENT
-    enemy_x += enemy_x_change
+    for i in range(num_of_enemies):
+        # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
+        enemy_x[i] += enemy_x_change[i]
+        if enemy_x[i] > 736: #less than 800 to account for the enemy size (64px)
+            enemy_x_change[i] -= enemy_x_speed
+            enemy_x[i] += enemy_x_change[i]
+            enemy_y[i] += enemy_y_change[i]
+        elif enemy_x[i] < 0:
+            enemy_x_change[i] += enemy_x_speed
+            enemy_x[i] += enemy_x_change[i]
+            enemy_y[i] += enemy_y_change[i]
 
-    if enemy_x > 736: #less than 800 to account for the enemy size (64px)
-        enemy_x_change -= enemy_x_speed
-        enemy_x += enemy_x_change
-        enemy_y += enemy_y_change
-    elif enemy_x < 0:
-        enemy_x_change += enemy_x_speed
-        enemy_x += enemy_x_change
-        enemy_y += enemy_y_change
+        #### BULLET COLLISION
+        collision = is_collision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
+        if collision: # if it is True
+            bullet_y = 480
+            bullet_state = "ready"
+            score += 1
+            print(score)
+            # respawn the enemy at a random point
+            enemy_x[i] = random.randint(0, 736)
+            enemy_y[i] = random.randint(50, 200)
+
+    #### END OF BULLET COLLISION
+
+        # Add enemy
+        enemy(enemy_x[i], enemy_y[i], i)
 
     #### END OF ENEMY MOVEMENT
 
@@ -176,23 +206,11 @@ while running:
     #### END OF BULLET MOVEMENT
 
 
-    #### BULLET COLLISION
-    collision = is_collision(enemy_x, enemy_y, bullet_x, bullet_y)
-    if collision: # if it is True
-        bullet_y = 480
-        bullet_state = "ready"
-        score += 1
-        print(score)
-        # respawn the enemy at a random point
-        enemy_x = random.randrange(0, 736)
-        enemy_y = random.randrange(50, 200)
-
-    #### END OF BULLET COLLISION
+    
 
     # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
 
-    # Add enemy
-    enemy(enemy_x, enemy_y)
+    
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
