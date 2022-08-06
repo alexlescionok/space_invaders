@@ -15,8 +15,12 @@ import math
 pygame.init()
 
 ##### GAME WINDOW SETUP
+# assigning values to X and Y variable
+x_window = 800
+y_window = 600
+
 # Create a screen for our game - set the size for width, height - both in pixels
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((x_window, y_window))
 
 # Load in background
 background = pygame.image.load("images/space_background1.png")
@@ -28,13 +32,35 @@ pygame.display.set_caption("space_invaders")
 icon = pygame.image.load("images/spaceship_icon.png")
 pygame.display.set_icon(icon)
 
+# Define initial score
+score = 0
+
+# SET UP SCOREBOARD
+# Define colours
+def scoreboard():
+    green = (0, 255, 0)
+    blue = (0, 0, 128)
+
+    # Define the font, set the font size to 32
+    font = pygame.font.Font('freesansbold.ttf', 32)
+
+    # Define the text to be displayed
+    text = font.render(f"SCOREBOARD: {score}", True, green, blue)
+
+    # Create rectable fill around the text
+    textRect = text.get_rect()
+
+    # Set the rectangle in the middle of the screen
+    textRect.center = (150, 50)
+
+    screen.blit(text, textRect)
 #### END OF GAME WINDOW SETUP
 
 #### GLOBALS
 
 player_and_bullet_x_speed = 0.3
 enemy_x_speed = 0.2
-score = 0
+
 
 #### END OF GLOBALS
 
@@ -77,7 +103,6 @@ def is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
     distance = math.sqrt((math.pow(enemy_x - bullet_x, 2)) + (math.pow(enemy_y - bullet_y, 2)))
     # print(distance)
     if distance < 26: # the lower the number the more it looks like the bullet has gone into the enemy
-        print(distance)
         return True
 
 #### ENEMY
@@ -118,6 +143,8 @@ while running:
 
     # Set background image
     screen.blit(background, (0, 0))
+
+    
 
     # pygame.event.get() grabs all of the events that are happening in the game
     # This for loop checks for events and reacts to them
@@ -160,7 +187,6 @@ while running:
     elif player_x < 0:
         player_x = 0
 
-
     #### ENEMY MOVEMENT
     for i in range(num_of_enemies):
         # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
@@ -180,18 +206,16 @@ while running:
             bullet_y = 480
             bullet_state = "ready"
             score += 1
-            print(score)
             # respawn the enemy at a random point
             enemy_x[i] = random.randint(0, 736)
             enemy_y[i] = random.randint(50, 200)
 
-    #### END OF BULLET COLLISION
+        #### END OF BULLET COLLISION
 
-        # Add enemy
+        # DRAW ENEMY
         enemy(enemy_x[i], enemy_y[i], i)
 
     #### END OF ENEMY MOVEMENT
-
 
     #### BULLET MOVEMENT
     if bullet_state == "fire":
@@ -205,12 +229,13 @@ while running:
 
     #### END OF BULLET MOVEMENT
 
-
+    # Draw scoreboard
     
 
     # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
     player(player_x, player_y)
 
-    
+    # Add scoreboard
+    scoreboard()
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
