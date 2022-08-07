@@ -32,36 +32,34 @@ pygame.display.set_caption("space_invaders")
 icon = pygame.image.load("images/spaceship_icon.png")
 pygame.display.set_icon(icon)
 
+# SET UP SCOREBOARD
 # Define initial score
 score = 0
 
-# SET UP SCOREBOARD
 # reference: https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
 # Define colours
 def scoreboard():
     green = (0, 255, 0)
     blue = (0, 0, 128)
+    red = (255, 0, 0)
 
-    # Define the font, set the font size to 32
+    # Define the font, set the font size to 32; 'freesansbold' is a free font available in pygame
+    # If you wanted to use a different font, you can download fonts, include that font in the folder sctructure and just reference it.
     font = pygame.font.Font('freesansbold.ttf', 32)
 
     # Define the text to be displayed
+    # True so we can display it on the screen
+    # The first colour is for the text, the second colour is for the rectangle to fill around the text
     text = font.render(f"SCOREBOARD: {score}", True, green, blue)
 
-    # Create rectable fill around the text
-    textRect = text.get_rect()
+    screen.blit(text, (10, 10))
 
-    # Set the rectangle in the middle of the screen
-    textRect.center = (150, 50)
-
-    screen.blit(text, textRect)
 #### END OF GAME WINDOW SETUP
 
 #### GLOBALS
 
 player_and_bullet_x_speed = 0.3
 enemy_x_speed = 0.2
-
 
 #### END OF GLOBALS
 
