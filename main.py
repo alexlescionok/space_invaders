@@ -37,12 +37,13 @@ pygame.display.set_icon(icon)
 # Define initial score
 score = 0
 
+green = (0, 255, 0)
+blue = (0, 0, 128)
+red = (255, 0, 0)
+
 # reference: https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
 # Define colours
 def scoreboard():
-    green = (0, 255, 0)
-    blue = (0, 0, 128)
-    red = (255, 0, 0)
 
     # Define the font, set the font size to 32; 'freesansbold' is a free font available in pygame
     # If you wanted to use a different font, you can download fonts, include that font in the folder sctructure and just reference it.
@@ -54,6 +55,14 @@ def scoreboard():
     text = font.render(f"SCOREBOARD: {score}", True, green, blue)
 
     screen.blit(text, (10, 10))
+
+# SET UP GAME OVER TEXT
+def game_over_text():
+    font = pygame.font.Font('freesansbold.ttf', 48)
+    text = font.render(f"GAME OVER. FINAL SCORE: {score}", True, red, blue)
+    # use get_rect and center to position text in the middle
+    center_coordinates = text.get_rect(center=(x_window / 2, y_window / 2))
+    screen.blit(text, center_coordinates)
 
 #### END OF GAME WINDOW SETUP
 
@@ -151,8 +160,6 @@ while running:
     # Set background image
     screen.blit(background, (0, 0))
 
-    
-
     # pygame.event.get() grabs all of the events that are happening in the game
     # This for loop checks for events and reacts to them
     for event in pygame.event.get():
@@ -201,6 +208,16 @@ while running:
 
     #### ENEMY MOVEMENT
     for i in range(num_of_enemies):
+        # GAME OVER CONDITION
+        if enemy_y[i] > 440: # the point at which the enemy hits the spaceship
+            for j in range(num_of_enemies):
+                # move all enemies out of the window screen
+                enemy_y[j] = 2000
+                player_y = 2000
+            # show game over text
+            game_over_text()
+            break
+        
         # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
         enemy_x[i] += enemy_x_change[i]
         if enemy_x[i] > 736: #less than 800 to account for the enemy size (64px)
