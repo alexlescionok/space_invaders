@@ -10,6 +10,7 @@ from dis import dis
 import pygame
 import random
 import math
+from pygame import mixer # lets us handle music/audio in pygame
 
 # Initialise the pygame
 pygame.init()
@@ -62,6 +63,13 @@ player_and_bullet_x_speed = 0.3
 enemy_x_speed = 0.2
 
 #### END OF GLOBALS
+
+#### GAME MUSIC/SOUND EFFECTS
+# mixer.music is used for longer tracks, e.g music
+mixer.music.load("audio/background.wav")
+mixer.music.play(-1) # -1 means play on loop
+
+#### END OF GAME MUSIC/SOUND EFFECTS
 
 #### PLAYER
 player_img = pygame.image.load("images/player_spaceship.png")
@@ -167,6 +175,11 @@ while running:
             # if the player presses on the spacebar AND the bullet_state is "ready", then allow the user to fire!
             # the bullet_state has to be "ready", because that is what it is set before the bullet is every fired and when the bullet_y has been reset back to 480 (check bullet movement - the state gets reverted back to "ready" after initially being "fire")
             elif event.key == pygame.K_SPACE and bullet_state == "ready":
+                # Add in sound effect for the bullet being fired
+                # mixer.Sound is used for shorter sounds, e.g. sound effects
+                bullet_sound = mixer.Sound("audio/fire_sound.wav")
+                bullet_sound.play() # didn't add -1 as an argument because we don't want the sound to play in a loop
+                
                 # define bullet_x to be the same as player_x - this along with bullet_x being passed as an argument in the bullet movement will ensure that the bullet uses the x_position of when it is fired, rather than follow the player spaceship
                 bullet_x = player_x
                 # trigger the fire_bullet function
@@ -202,6 +215,10 @@ while running:
         #### BULLET COLLISION
         collision = is_collision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
         if collision: # if it is True
+            # Add in sound effect for the enemy spaceship being hit
+            # mixer.Sound is used for shorter sounds, e.g. sound effects
+            explosion_sound = mixer.Sound("audio/explosion_sound.wav")
+            explosion_sound.play() # didn't add -1 as an argument because we don't want the sound to play in a loop
             bullet_y = 480
             bullet_state = "ready"
             score += 1
