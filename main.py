@@ -61,15 +61,24 @@ def game_over_text():
     font = pygame.font.Font('freesansbold.ttf', 48)
     text = font.render(f"GAME OVER. FINAL SCORE: {score}", True, red, blue)
     # use get_rect and center to position text in the middle
-    center_coordinates = text.get_rect(center=(x_window / 2, y_window / 2))
-    screen.blit(text, center_coordinates)
+    position = text.get_rect(center=(x_window / 2, y_window / 2))
+    screen.blit(text, position)
+
+# SET UP PLAY AGAIN TEXT
+def play_again_text():
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    text = font.render("Press spacebar to play again", True, green)
+    position = text.get_rect(center=(x_window / 2, y_window / 2 + 100))
+    screen.blit(text, position)
 
 #### END OF GAME WINDOW SETUP
+
 
 #### GLOBALS
 
 player_and_bullet_x_speed = 0.3
 enemy_x_speed = 0.2
+game_over = False
 
 #### END OF GLOBALS
 
@@ -145,20 +154,110 @@ for i in range(num_of_enemies):
 # the i argument at the end will tell screen blit how many times to draw the enemy image
 def enemy(x_position, y_position, i):
     screen.blit(enemy_img[i], (x_position, y_position))
-        
 
 #### END OF ENEMY
+
+
+#### MAIN FUNCTION ###########################
+
+def main():
+    # Set the RGB fill
+    screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
+
+    # Set background image
+    screen.blit(background, (0, 0))
+
+    global player_x
+    global player_y
+    global player_x_change
+    global bullet_y
+    global bullet_state
+    global score
+
+    # Define new value of player_x following the for loop checking for events (left/right keystrokes)
+    player_x += player_x_change
+    
+    # Stop the player from going beyond 800px and less than 0px - so that the player cannot leave the window
+    if player_x > 736: #less than 800 to account for the spaceship size (64px)
+        player_x = 736
+    elif player_x < 0:
+        player_x = 0
+
+    #### ENEMY MOVEMENT
+    for i in range(num_of_enemies):
+        # GAME OVER CONDITION
+        if enemy_y[i] > 200: # the point at which the enemy hits the spaceship
+            for j in range(num_of_enemies):
+                # move all enemies out of the window screen
+                enemy_y[j] = 2000
+                player_y = 2000
+            # show game over text
+            game_over_text()
+            play_again_text()
+            global game_over
+            game_over = True
+            break
+        
+        
+        # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
+        enemy_x[i] += enemy_x_change[i]
+        if enemy_x[i] > 736: #less than 800 to account for the enemy size (64px)
+            enemy_x_change[i] -= enemy_x_speed
+            enemy_x[i] += enemy_x_change[i]
+            enemy_y[i] += enemy_y_change[i]
+        elif enemy_x[i] < 0:
+            enemy_x_change[i] += enemy_x_speed
+            enemy_x[i] += enemy_x_change[i]
+            enemy_y[i] += enemy_y_change[i]
+
+        #### BULLET COLLISION
+        collision = is_collision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
+        if collision: # if it is True
+            # Add in sound effect for the enemy spaceship being hit
+            # mixer.Sound is used for shorter sounds, e.g. sound effects
+            explosion_sound = mixer.Sound("audio/explosion_sound.wav")
+            explosion_sound.play() # didn't add -1 as an argument because we don't want the sound to play in a loop
+            bullet_y = 480
+            bullet_state = "ready"
+            score += 1
+            # respawn the enemy at a random point
+            enemy_x[i] = random.randint(0, 736)
+            enemy_y[i] = random.randint(50, 200)
+
+        #### END OF BULLET COLLISION
+
+        # DISPLAY ENEMY
+        enemy(enemy_x[i], enemy_y[i], i)
+
+    #### END OF ENEMY MOVEMENT
+
+    #### BULLET MOVEMENT
+    if bullet_state == "fire":
+        fire_bullet(bullet_x, bullet_y)
+        bullet_y -= bullet_y_change
+        # once the bullet gets past the top of the window, let me player fire again
+        if bullet_y <= 0:
+            bullet_y = 480
+            # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
+            bullet_state = "ready"
+
+    #### END OF BULLET MOVEMENT
+
+    # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
+    player(player_x, player_y)
+
+    # Add scoreboard
+    scoreboard()
+
+#### END OF MAIN FUNCTION ###########################
+
+
 
 # An event is anything that's happening inside our game screen, e.g. closing the window, moving up/down using your arrow keys
 # We need to keep the game screen window open unless the player closes it
 # This is also going to be our main game loop! So everything will have to go into this loop - specifically the for loop going through game events
 running = True
 while running:
-    # Set the RGB fill
-    screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
-
-    # Set background image
-    screen.blit(background, (0, 0))
 
     # pygame.event.get() grabs all of the events that are happening in the game
     # This for loop checks for events and reacts to them
@@ -197,78 +296,16 @@ while running:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
                 player_x_change = 0
     
-    # Define new value of player_x following the for loop checking for events (left/right keystrokes)
-    player_x += player_x_change
-    
-    # Stop the player from going beyond 800px and less than 0px - so that the player cannot leave the window
-    if player_x > 736: #less than 800 to account for the spaceship size (64px)
-        player_x = 736
-    elif player_x < 0:
-        player_x = 0
+    if game_over == False:
+        main()
+    elif game_over == True:
+        # this is where we check if the player wants another go!
+        # doesn't work yet
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    game_over = True
+                    main()
 
-    #### ENEMY MOVEMENT
-    for i in range(num_of_enemies):
-        # GAME OVER CONDITION
-        if enemy_y[i] > 440: # the point at which the enemy hits the spaceship
-            for j in range(num_of_enemies):
-                # move all enemies out of the window screen
-                enemy_y[j] = 2000
-                player_y = 2000
-            # show game over text
-            game_over_text()
-            break
-        
-        # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
-        enemy_x[i] += enemy_x_change[i]
-        if enemy_x[i] > 736: #less than 800 to account for the enemy size (64px)
-            enemy_x_change[i] -= enemy_x_speed
-            enemy_x[i] += enemy_x_change[i]
-            enemy_y[i] += enemy_y_change[i]
-        elif enemy_x[i] < 0:
-            enemy_x_change[i] += enemy_x_speed
-            enemy_x[i] += enemy_x_change[i]
-            enemy_y[i] += enemy_y_change[i]
-
-        #### BULLET COLLISION
-        collision = is_collision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
-        if collision: # if it is True
-            # Add in sound effect for the enemy spaceship being hit
-            # mixer.Sound is used for shorter sounds, e.g. sound effects
-            explosion_sound = mixer.Sound("audio/explosion_sound.wav")
-            explosion_sound.play() # didn't add -1 as an argument because we don't want the sound to play in a loop
-            bullet_y = 480
-            bullet_state = "ready"
-            score += 1
-            # respawn the enemy at a random point
-            enemy_x[i] = random.randint(0, 736)
-            enemy_y[i] = random.randint(50, 200)
-
-        #### END OF BULLET COLLISION
-
-        # DRAW ENEMY
-        enemy(enemy_x[i], enemy_y[i], i)
-
-    #### END OF ENEMY MOVEMENT
-
-    #### BULLET MOVEMENT
-    if bullet_state == "fire":
-        fire_bullet(bullet_x, bullet_y)
-        bullet_y -= bullet_y_change
-        # once the bullet gets past the top of the window, let me player fire again
-        if bullet_y <= 0:
-            bullet_y = 480
-            # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
-            bullet_state = "ready"
-
-    #### END OF BULLET MOVEMENT
-
-    # Draw scoreboard
-    
-
-    # Add player - this needs to be drawn after screen.fill(), otherwise the screen will be filled over the player
-    player(player_x, player_y)
-
-    # Add scoreboard
-    scoreboard()
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
