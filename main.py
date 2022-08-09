@@ -161,6 +161,8 @@ def enemy(x_position, y_position, i):
 #### MAIN FUNCTION ###########################
 
 def main():
+    global game_over
+    game_over = False
     # Set the RGB fill
     screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
 
@@ -194,9 +196,8 @@ def main():
             # show game over text
             game_over_text()
             play_again_text()
-            global game_over
             game_over = True
-            break
+            # break
         
         
         # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
@@ -298,14 +299,14 @@ while running:
     
     if game_over == False:
         main()
-    elif game_over == True:
+    if game_over == True:
+        # print("game is over")
         # this is where we check if the player wants another go!
         # doesn't work yet
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    game_over = True
-                    main()
+        if event.key == pygame.K_SPACE:
+            print("restarting using spacebar")
+            game_over = False
+            main()
 
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
