@@ -161,8 +161,6 @@ def enemy(x_position, y_position, i):
 #### MAIN FUNCTION ###########################
 
 def main():
-    global game_over
-    game_over = False
     # Set the RGB fill
     screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
 
@@ -196,7 +194,6 @@ def main():
             # show game over text
             game_over_text()
             play_again_text()
-            game_over = True
             # break
         
         
@@ -297,16 +294,14 @@ while running:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
                 player_x_change = 0
     
-    if game_over == False:
-        main()
-    if game_over == True:
-        # print("game is over")
-        # this is where we check if the player wants another go!
-        # doesn't work yet
-        if event.key == pygame.K_SPACE:
-            print("restarting using spacebar")
-            game_over = False
+    # restarting reference: https://www.reddit.com/r/pygame/comments/n8vnn2/how_do_i_make_a_restart_button/
+    # game is suuuuuper slow when if game_over block is in the for event in pygame.event.get(): loop / was previously in the while loop
+        if game_over == False:
             main()
+        if game_over == True:
+            if event.key == pygame.K_r:
+                game_over = False
+                main()
 
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
