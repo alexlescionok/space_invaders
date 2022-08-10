@@ -6,6 +6,12 @@ background: <a href='https://www.freepik.com/vectors/meteor'>Meteor vector creat
 bullet: <a href="https://www.flaticon.com/free-icons/bullet" title="bullet icons">Bullet icons created by Good Ware - Flaticon</a>
 '''
 
+'''
+Next steps:
+I think to make restart functionality work, we need to utilise classes - at the very least all the examples that I've seen where people talk about restarting, they use classes - once done we can troubleshoot things further.
+The restart logic here makes complete sense: https://stackoverflow.com/questions/13984066/pygame-restart 
+'''
+
 from dis import dis
 import pygame
 import random
