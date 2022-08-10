@@ -173,6 +173,9 @@ def main():
     global bullet_y
     global bullet_state
     global score
+    global game_over
+
+    
 
     # Define new value of player_x following the for loop checking for events (left/right keystrokes)
     player_x += player_x_change
@@ -192,10 +195,10 @@ def main():
                 enemy_y[j] = 2000
                 player_y = 2000
             # show game over text
+            game_over = True
             game_over_text()
             play_again_text()
-            # break
-        
+            
         
         # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
         enemy_x[i] += enemy_x_change[i]
@@ -256,7 +259,8 @@ def main():
 # This is also going to be our main game loop! So everything will have to go into this loop - specifically the for loop going through game events
 running = True
 while running:
-
+    main()
+    
     # pygame.event.get() grabs all of the events that are happening in the game
     # This for loop checks for events and reacts to them
     for event in pygame.event.get():
@@ -272,13 +276,13 @@ while running:
                 player_x_change -= player_and_bullet_x_speed
                 bullet_x_change -= player_and_bullet_x_speed
             # if player presses on the right key, move to the left (for as long as the right key is pressed)
-            elif event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT:
                 # increase the value of player_x_change
                 player_x_change += player_and_bullet_x_speed
                 bullet_x_change += player_and_bullet_x_speed
             # if the player presses on the spacebar AND the bullet_state is "ready", then allow the user to fire!
             # the bullet_state has to be "ready", because that is what it is set before the bullet is every fired and when the bullet_y has been reset back to 480 (check bullet movement - the state gets reverted back to "ready" after initially being "fire")
-            elif event.key == pygame.K_SPACE and bullet_state == "ready":
+            if event.key == pygame.K_SPACE and bullet_state == "ready":
                 # Add in sound effect for the bullet being fired
                 # mixer.Sound is used for shorter sounds, e.g. sound effects
                 bullet_sound = mixer.Sound("audio/fire_sound.wav")
@@ -288,20 +292,24 @@ while running:
                 bullet_x = player_x
                 # trigger the fire_bullet function
                 fire_bullet(bullet_x, bullet_y)
+            if event.key == pygame.K_r and game_over == True:
+                print("PRESSED R")
+                main()
                 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
                 player_x_change = 0
     
+    
     # restarting reference: https://www.reddit.com/r/pygame/comments/n8vnn2/how_do_i_make_a_restart_button/
     # game is suuuuuper slow when if game_over block is in the for event in pygame.event.get(): loop / was previously in the while loop
-        if game_over == False:
-            main()
-        if game_over == True:
-            if event.key == pygame.K_r:
-                game_over = False
-                main()
+        # if game_over == False:
+        #     main()
+        # if game_over == True:
+            # if event.key == pygame.K_r:
+            #     game_over = False
+            #     main()
 
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
