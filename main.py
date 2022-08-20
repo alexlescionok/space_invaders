@@ -204,7 +204,7 @@ while running:
             # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
             bullet.bullet_state = "ready"
 
-    #### END OF BULLET MOVEMENT
+    #### END OF BULLET MOVEMENT 
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
 
