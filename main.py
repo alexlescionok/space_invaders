@@ -34,7 +34,7 @@ x_window = 800
 y_window = 600
 screen = pygame.display.set_mode((x_window, y_window))
 
-
+### GAME WINDOW
 class Setup():
     # Define initial score
     score = 0
@@ -48,15 +48,15 @@ class Setup():
         # Initialise the pygame
         pygame.init()
 
-        # Load in background
-        background = pygame.image.load("images/space_background1.png")
-
         # Change title displayed in the game window
         pygame.display.set_caption("space_invaders")
 
         # Set the game icon
         icon = pygame.image.load("images/spaceship_icon.png")
         pygame.display.set_icon(icon) 
+
+        # Load in background
+        background = pygame.image.load("images/space_background.png")
 
         # Set the RGB fill
         screen.fill((0, 0, 0)) #obviously we can set the background to something cooler
@@ -103,9 +103,7 @@ class Setup():
         # screen = pygame.display.set_mode((self.x_window, self.y_window))
         screen.blit(text, position)
 
-#### END OF GAME WINDOW SETUP
-
-
+#### END OF GAME WINDOW
 
 #### PLAYER
 class Player:
@@ -128,8 +126,9 @@ class Player:
 
 #### END OF PLAYER
 
+#### BULLET
 class Bullet:
-    #### PLAYER BULLET
+
     bullet_img = pygame.image.load("images/bullet.png")
     bullet_x = 0 # x is width // 0 is the most left point of the screen - this will be controlled in a while loop
     bullet_y = 480 # y is height // 0 is the highest point of the screen - keeping it at 480 because that's where the ship is
@@ -143,12 +142,25 @@ class Bullet:
     def fire_bullet(self, x_position, y_position):
         self.bullet_state = "fire"
         screen.blit(self.bullet_img, (x_position + 16, y_position + 16))
+    
+    def bullet_movement(self, x_position):
+        if self.bullet_state == "fire":
+            self.fire_bullet(x_position, self.bullet_y)
+            self.bullet_y -= self.bullet_y_change
+            # once the bullet gets past the top of the window, let me player fire again
+            if self.bullet_y <= 0:
+                self.bullet_y = 480
+                # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
+                self.bullet_state = "ready"
 
 #### END OF BULLET
 
 setup = Setup()
 player = Player()
 bullet = Bullet()
+
+# define bullet_x to be the same as player_x - this along with bullet_x being passed as an argument in the bullet movement will ensure that the bullet uses the x_position of when it is fired, rather than follow the player spaceship
+bullet_x = player.player_x
 
 while running:
     
@@ -177,8 +189,6 @@ while running:
                 bullet_sound = mixer.Sound("audio/fire_sound.wav")
                 bullet_sound.play() # didn't add -1 as an argument because we don't want the sound to play in a loop
                 
-                # define bullet_x to be the same as player_x - this along with bullet_x being passed as an argument in the bullet movement will ensure that the bullet uses the x_position of when it is fired, rather than follow the player spaceship
-                bullet_x = player.player_x
                 # trigger the fire_bullet function
                 bullet.fire_bullet(bullet_x, bullet.bullet_y)
             
@@ -189,21 +199,15 @@ while running:
                 # Don't change the value of player_x_change - we don't want the player to move any further once the left/right key is no longer pressed
                 player.player_x_change = 0
 
+    # Display scoreboard
     setup.scoreboard()
-    player.player(player.player_x, player.player_y)
 
-    
-    #### BULLET MOVEMENT
-    if bullet.bullet_state == "fire":
-        bullet.fire_bullet(bullet_x, bullet.bullet_y)
-        bullet.bullet_y -= bullet.bullet_y_change
-        # once the bullet gets past the top of the window, let me player fire again
-        if bullet.bullet_y <= 0:
-            bullet.bullet_y = 480
-            # reset the state to "ready" so that it doesn't continue firing - although this could be an idea for an automatic weapon...
-            bullet.bullet_state = "ready"
+    # Display player
+    # player.player(player.player_x, player.player_y)
 
-    #### END OF BULLET MOVEMENT 
+    # Bullet movement
+    bullet.bullet_movement(bullet_x)
+
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
 
