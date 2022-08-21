@@ -24,6 +24,10 @@ from pygame import mixer # lets us handle music/audio in pygame
 
 player_and_bullet_x_speed = 0.3
 enemy_x_speed = 0.2
+
+# Set the number of enemies we want to have
+num_of_enemies = 6
+
 game_over = False
 running = True
 
@@ -155,8 +159,34 @@ class Bullet:
 
 #### END OF BULLET
 
+#### ENEMY
+class Enemy:
+    # Define lists which we will append the enemy variables to in order to create multiple enemies
+    enemy_img = []
+    enemy_x = []
+    enemy_y = []
+    enemy_x_change = []
+    enemy_y_change = []
+
+    # the i argument at the end will tell screen blit how many times to draw the enemy image
+    def enemy(self, x_position, y_position, i):
+        screen.blit(self.enemy_img[i], (x_position, y_position))
+        for i in range(num_of_enemies):
+            self.enemy_img.append(pygame.image.load("images/enemy_spaceship.png"))
+            # set the value to random
+            self.enemy_x.append(random.randint(0, 736)) # x is width // 0 is the most left point of the screen
+            self.enemy_y.append(random.randint(50, 200)) # y is height // 0 is the highest point of the screen
+
+            #Define the change as 0 to start
+            self.enemy_x_change.append(0.3)
+            self.enemy_y_change.append(30) # maybe we add random to this to increase the tension!!
+            
+
+#### END OF ENEMY
+
 setup = Setup()
 player = Player()
+enemy = Enemy()
 bullet = Bullet()
 
 # define bullet_x to be the same as player_x - this along with bullet_x being passed as an argument in the bullet movement will ensure that the bullet uses the x_position of when it is fired, rather than follow the player spaceship
@@ -208,6 +238,30 @@ while running:
     # Bullet movement
     bullet.bullet_movement(bullet_x)
 
+    ### ENEMY MOVEMENT
+    for i in range(num_of_enemies):
+        # GAME OVER CONDITION
+        if enemy.enemy_y[i] > 440: # the point at which the enemy hits the spaceship
+            for j in range(num_of_enemies):
+                # move all enemies out of the window screen
+                enemy.enemy_y[j] = 2000
+                player_y = 2000
+            # show game over text
+            # game_over_text()
+            break
+        
+        # target the relevant index [i] in the num_of_enemies list - without this, the game won't know which enemy to affect as they all have different x and y coordinates
+        enemy.enemy_x[i] += enemy.enemy_x_change[i]
+        if enemy.enemy_x[i] > 736: #less than 800 to account for the enemy size (64px)
+            enemy.enemy_x_change[i] -= enemy_x_speed
+            enemy.enemy_x[i] += enemy.enemy_x_change[i]
+            enemy.enemy_y[i] += enemy.enemy_y_change[i]
+        elif enemy.enemy_x[i] < 0:
+            enemy.enemy_x_change[i] += enemy_x_speed
+            enemy.enemy_x[i] += enemy.enemy_x_change[i]
+            enemy.enemy_y[i] += enemy.enemy_y_change[i]
+
+        enemy.enemy(enemy.enemy_x[i], enemy.enemy_y[i], i)
 
     pygame.display.update() # whenever we want to update/add something new to the game window, we must add pygame.display.update() for the change to appear in our window! - be aware, this change is not immediate!
 
